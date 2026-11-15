@@ -143,7 +143,9 @@ jobs:
       - name: Zip GodotProject
         run: |
           rm -f GodotProject/bin/~*
-          zip -qr "GodotProject-${GITHUB_REF_NAME}.zip" GodotProject
+          # shader_cache is rebuilt by Godot on first open, and its very long paths
+          # break extraction on Windows (260-char path limit).
+          zip -qr "GodotProject-${GITHUB_REF_NAME}.zip" GodotProject -x "GodotProject/.godot/shader_cache/*"
           unzip -l "GodotProject-${GITHUB_REF_NAME}.zip" | tail -1
       - name: Create GitHub release
         env:
