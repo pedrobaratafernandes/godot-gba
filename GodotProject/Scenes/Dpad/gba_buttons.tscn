@@ -1,0 +1,137 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/buttons/xbox_button_a.png" id="a"]
+[ext_resource type="Texture2D" path="res://assets/buttons/xbox_button_a_outline.png" id="a_p"]
+[ext_resource type="Texture2D" path="res://assets/buttons/xbox_button_b.png" id="b"]
+[ext_resource type="Texture2D" path="res://assets/buttons/xbox_button_b_outline.png" id="b_p"]
+[ext_resource type="Texture2D" path="res://assets/trigger/wiiu_button_l.png" id="l"]
+[ext_resource type="Texture2D" path="res://assets/trigger/wiiu_button_l_outline.png" id="l_p"]
+[ext_resource type="Texture2D" path="res://assets/trigger/wiiu_button_r.png" id="r"]
+[ext_resource type="Texture2D" path="res://assets/trigger/wiiu_button_r_outline.png" id="r_p"]
+[ext_resource type="Texture2D" path="res://assets/start/gamecube_button_start.png" id="start"]
+[ext_resource type="Texture2D" path="res://assets/start/gamecube_button_start_outline.png" id="start_p"]
+
+[node name="GBAButtons" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Face" type="Control" parent="."]
+layout_mode = 1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="A" type="TouchScreenButton" parent="Face"]
+modulate = Color(1, 1, 1, 0.8)
+position = Vector2(-180, -340)
+scale = Vector2(2.2, 2.2)
+texture_normal = ExtResource("a")
+texture_pressed = ExtResource("a_p")
+passby_press = true
+action = "gba_a"
+visibility_mode = 1
+
+[node name="B" type="TouchScreenButton" parent="Face"]
+modulate = Color(1, 1, 1, 0.8)
+position = Vector2(-330, -240)
+scale = Vector2(2.2, 2.2)
+texture_normal = ExtResource("b")
+texture_pressed = ExtResource("b_p")
+passby_press = true
+action = "gba_b"
+visibility_mode = 1
+
+[node name="ShoulderL" type="Control" parent="."]
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+mouse_filter = 2
+
+[node name="L" type="TouchScreenButton" parent="ShoulderL"]
+modulate = Color(1, 1, 1, 0.8)
+position = Vector2(230, 10)
+scale = Vector2(2.2, 2.2)
+texture_normal = ExtResource("l")
+texture_pressed = ExtResource("l_p")
+passby_press = true
+action = "gba_l"
+visibility_mode = 1
+
+[node name="ShoulderR" type="Control" parent="."]
+layout_mode = 1
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+mouse_filter = 2
+
+[node name="R" type="TouchScreenButton" parent="ShoulderR"]
+modulate = Color(1, 1, 1, 0.8)
+position = Vector2(-160, 10)
+scale = Vector2(2.2, 2.2)
+texture_normal = ExtResource("r")
+texture_pressed = ExtResource("r_p")
+passby_press = true
+action = "gba_r"
+visibility_mode = 1
+
+[node name="StartSelect" type="Control" parent="."]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="SELECT" type="TouchScreenButton" parent="StartSelect"]
+modulate = Color(1, 1, 1, 0.8)
+position = Vector2(-115, -115)
+scale = Vector2(1.6, 1.6)
+texture_normal = ExtResource("start")
+texture_pressed = ExtResource("start_p")
+passby_press = true
+action = "gba_select"
+visibility_mode = 1
+
+[node name="Label" type="Label" parent="StartSelect/SELECT"]
+offset_top = 50.0
+offset_right = 64.0
+offset_bottom = 64.0
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 9
+text = "SELECT"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="START" type="TouchScreenButton" parent="StartSelect"]
+modulate = Color(1, 1, 1, 0.8)
+position = Vector2(13, -115)
+scale = Vector2(1.6, 1.6)
+texture_normal = ExtResource("start")
+texture_pressed = ExtResource("start_p")
+passby_press = true
+action = "gba_start"
+visibility_mode = 1
+
+[node name="Label" type="Label" parent="StartSelect/START"]
+offset_top = 50.0
+offset_right = 64.0
+offset_bottom = 64.0
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 9
+text = "START"
+horizontal_alignment = 1
+vertical_alignment = 1

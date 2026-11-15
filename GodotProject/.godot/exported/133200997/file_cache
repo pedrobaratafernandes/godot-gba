@@ -1,0 +1,7 @@
+res://Scenes/Dpad/dpad.tscn::fe2b30625d340bd8b2350301bca8c4e9::1794742037::res://.godot/exported/133200997/export-ebb138391d779e93b899d8ae851c68a1-dpad.scn
+res://Scenes/Dpad/gba_buttons.tscn::3dc0e11aecb8ddca57cc8403020dd9db::1794737640::res://.godot/exported/133200997/export-90ce1f83c94816d6d4b066c094830fea-gba_buttons.scn
+res://Scenes/Dpad/menu_button.tscn::da7a5b45f93f17360cf170bfb3935a7d::1794737640::res://.godot/exported/133200997/export-3234be86e8b4bb89b559c1e550e6bea6-menu_button.scn
+res://Scenes/Emulator/MainGBA.tscn::40cb07bb260d7734ca99786b40eebc9c::1794741755::res://.godot/exported/133200997/export-23356e7802fcbf19c06904fe1c6c4586-MainGBA.scn
+res://Scenes/GameMenu/GameMenu.tscn::7cc3756bf97ac3711dc3122492744044::1794735607::res://.godot/exported/133200997/export-98ae67a05b23d1cd48d2cf00fffa35af-GameMenu.scn
+res://Scenes/Launcher/Launcher.tscn::4756954879b52ec98fe98c608ff856f7::1794738474::res://.godot/exported/133200997/export-ccc14319390343ee047b0506cb7b8dbc-Launcher.scn
+res://default_bus_layout.tres::d7e4d15f31485087f0b2c88423951839::1794734214::res://.godot/exported/133200997/export-19246414aa9fb561ced4b8dce477acec-default_bus_layout.res

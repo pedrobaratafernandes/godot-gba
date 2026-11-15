@@ -1,0 +1,85 @@
+[gd_scene format=3 uid="uid://cgcd1ymbc5w3b"]
+
+[ext_resource type="Script" uid="uid://yn6tovbtd33o" path="res://Scripts/Emulator/MainGBA.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://d6f8ujo14f5b" path="res://icon.svg" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://menuoverlay" path="res://Scenes/GameMenu/GameMenu.tscn" id="3_menu"]
+[ext_resource type="PackedScene" uid="uid://dn4w08xcdfday" path="res://Scenes/Dpad/dpad.tscn" id="4_dpad"]
+[ext_resource type="PackedScene" path="res://Scenes/Dpad/gba_buttons.tscn" id="5_buttons"]
+[ext_resource type="PackedScene" uid="uid://rcbagsjsl6db" path="res://Scenes/Dpad/menu_button.tscn" id="6_menu_btn"]
+
+[sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_sound"]
+
+[node name="MainGBA" type="Control" unique_id=161119861]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1951763832]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.121569, 0.121569, 0.121569, 1)
+
+[node name="Logo" type="TextureRect" parent="." unique_id=379054057]
+modulate = Color(1, 1, 1, 0.44705883)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_icon")
+expand_mode = 1
+
+[node name="DecorativeGradient" type="ColorRect" parent="." unique_id=2040664284]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.180392, 0.180392, 0.231373, 0.6)
+
+[node name="Display" type="TextureRect" parent="." unique_id=1080429043]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="GBAEmulator" type="GBAEmulator" parent="." unique_id=2067974448]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1659950573]
+stream = SubResource("AudioStreamGenerator_sound")
+
+[node name="GameMenu" parent="." unique_id=153813808 instance=ExtResource("3_menu")]
+visible = false
+
+[node name="VirtualControls" parent="." unique_id=1479136181 instance=ExtResource("4_dpad")]
+visible = false
+layout_mode = 1
+anchors_preset = 4
+anchor_left = 0.0
+anchor_right = 0.0
+offset_left = 147.295
+offset_right = 147.295
+grow_horizontal = 1
+
+[node name="GBAButtons" parent="." unique_id=210415233 instance=ExtResource("5_buttons")]
+visible = false
+layout_mode = 1
+
+[node name="MenuButton" parent="." unique_id=1147097412 instance=ExtResource("6_menu_btn")]
+visible = false
+layout_mode = 1

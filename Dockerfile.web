@@ -1,0 +1,19 @@
+# Emscripten pinned to the version used by Godot's Web export templates.
+# When changing Godot version: export to Web, open it in the browser and look in the
+# console for "Build configuration: Emscripten X.Y.Z" — use that version here.
+FROM emscripten/emsdk:4.0.20
+
+# System dependencies for bindgen
+RUN apt-get update && apt-get install -y clang libclang-dev gcc-multilib g++-multilib && rm -rf /var/lib/apt/lists/*
+
+# rustup, then the pinned Rust version (with rust-src and wasm target) from rust-toolchain.toml
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
+ENV PATH="/root/.cargo/bin:${PATH}"
+WORKDIR /src
+COPY rust-toolchain.toml /src/rust-toolchain.toml
+RUN rustup toolchain install
+
+# Allow unstable flags (-Zbuild-std, -Z rustflags) on the stable compiler
+ENV RUSTC_BOOTSTRAP=1
+
+CMD ["cargo", "build", "--release", "--config", "profile.release.panic=\"abort\"", "-Zbuild-std=std,panic_abort", "--target", "wasm32-unknown-emscripten"]

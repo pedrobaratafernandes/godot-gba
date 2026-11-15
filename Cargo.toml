@@ -1,0 +1,54 @@
+[package]
+name = "godot-gba"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.97"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies.godot]
+# Pinned official crates.io version (same as godot-zx, which builds for wasm32).
+# To update: change the version, run all builds (including Web) and test in Godot.
+version = "=0.5.5"
+features = ["experimental-wasm", "lazy-function-tables"]
+
+[dependencies]
+# GBA emulator core. Pinned to a commit for reproducible builds.
+rustboyadvance-core = { git = "https://github.com/michelhe/rustboyadvance-ng", rev = "1d7ff23a6adb42d803ebd393c3d27d94e4fea15e" }
+rustboyadvance-utils = { git = "https://github.com/michelhe/rustboyadvance-ng", rev = "1d7ff23a6adb42d803ebd393c3d27d94e4fea15e" }
+
+[features]
+nothreads = ["godot/experimental-wasm-nothreads"]
+
+[profile.release]
+# Desktop uses unwind: godot-rust then catches a Rust panic and prints it, instead
+# of the whole Godot editor/game closing. The Web build forces abort (required by
+# -Zbuild-std=std,panic_abort, see build/*web*).
+# History: abort builds used to crash los-burros.gba ("executing undefind thumb
+# instruction e8bd at @fffffb42"); that was fixed in patches/arm7tdmi (see below),
+# and CI runs the tests with both abort and unwind.
+panic = "unwind"
+opt-level = 3
+strip = true
+# Do NOT enable LTO: rustboyadvance-ng shares pointers between the CPU and the bus
+# through unsafe code, and LTO miscompiles it — the game crashes in
+# arm7tdmi/src/psr.rs ("called Option::unwrap() on a None value") after 2-3 frames.
+# (rustboyadvance-ng itself does not use LTO in its release profile either.)
+lto = false
+
+# Tests emulate several seconds of GBA time; without optimisation they are very slow.
+[profile.test]
+opt-level = 3
+
+# Local copy of rustboyadvance-utils (same commit) with a single change:
+# on wasm32-unknown-emscripten it uses std::time instead of the 'instant' crate with
+# wasm-bindgen, which left "__wbindgen_*" imports in the .wasm and stopped Godot Web loading it.
+[patch."https://github.com/michelhe/rustboyadvance-ng"]
+rustboyadvance-utils = { path = "patches/rustboyadvance-utils" }
+# Local copy of the arm7tdmi CPU crate (same commit) with one change in src/memory.rs:
+# the CPU state is synced around every bus access, so the BIOS read protection sees
+# the right PC. Without it, panic = "abort" builds (the Web build) crash games such as
+# los-burros.gba: "executing undefind thumb instruction e8bd at @fffffb42".
+arm7tdmi = { path = "patches/arm7tdmi" }

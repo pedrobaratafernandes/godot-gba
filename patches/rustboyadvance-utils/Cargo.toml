@@ -1,0 +1,16 @@
+[package]
+name = "rustboyadvance-utils"
+version = "0.1.0"
+edition = "2024"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ringbuf = "0.4.8"
+log = "0.4.8"
+goblin = "0.10.1"
+
+
+# godot-gba: do not use instant/wasm-bindgen on Emscripten (Godot Web does not provide those imports).
+[target.'cfg(all(target_arch="wasm32", not(target_os="emscripten")))'.dependencies]
+instant = { version = "0.1.2", features = ["wasm-bindgen"] }

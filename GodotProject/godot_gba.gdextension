@@ -1,0 +1,23 @@
+; Note: use ';' for comments in this file. Godot 4.7 ignores the whole
+; [libraries] section when it contains '#' comments.
+
+[configuration]
+entry_symbol = "gdext_rust_init"
+compatibility_minimum = "4.6"
+
+[libraries]
+; Windows: build/build_windows.bat (also used by the editor and by F5)
+windows.debug.x86_64 = "res://bin/godot_gba.dll"
+windows.release.x86_64 = "res://bin/godot_gba.dll"
+
+; Linux: build/build_linux_docker.sh (or build/build_linux.sh on a Linux machine)
+linux.debug.x86_64 = "res://bin/libgodot_gba.so"
+linux.release.x86_64 = "res://bin/libgodot_gba.so"
+
+; Web: build/build_web_docker.sh builds both variants
+;   godot_gba.wasm         = Web export with "Thread Support" off (works on any server)
+;   godot_gba.threads.wasm = Web export with "Thread Support" on (needs COOP/COEP headers)
+web.debug.threads.wasm32 = "res://bin/godot_gba.threads.wasm"
+web.release.threads.wasm32 = "res://bin/godot_gba.threads.wasm"
+web.debug.wasm32 = "res://bin/godot_gba.wasm"
+web.release.wasm32 = "res://bin/godot_gba.wasm"

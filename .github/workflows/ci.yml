@@ -1,0 +1,154 @@
+# CI/CD for Godot GBA
+#
+# On every push / pull request:
+#   1. test     - core tests (cargo test) built with panic=unwind (desktop) AND
+#                 panic=abort (same as the Web build). The los-burros crash only
+#                 showed up with abort, so both are tested.
+#   2. windows  - GodotProject/bin/godot_gba.dll
+#   3. linux    - GodotProject/bin/libgodot_gba.so (Docker, same image as the Web)
+#   4. web      - GodotProject/bin/godot_gba.wasm + godot_gba.threads.wasm (Docker)
+#   5. smoke    - runs the real Godot 4.7.2 (headless, Linux) with the freshly built
+#                 .so and every game in GodotProject/games/, and fails on any Rust panic.
+#
+# On a tag v* (e.g. git tag v0.2.0 && git push origin v0.2.0):
+#   6. release  - GitHub release with GodotProject-<tag>.zip, containing the
+#                 GodotProject folder and the 4 libraries built above.
+
+name: CI
+
+on:
+  push:
+    branches: [master]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  GODOT_VERSION: 4.7.2
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+      - name: Tests (panic = unwind, desktop builds)
+        run: cargo test --release
+      - name: Tests (panic = abort, like the Web build)
+        env:
+          RUSTC_BOOTSTRAP: "1"
+          CARGO_PROFILE_RELEASE_PANIC: abort
+        run: cargo test --release -Zpanic-abort-tests --target-dir target/abort-test
+
+  windows:
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo build --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lib-windows
+          path: target/release/godot_gba.dll
+          if-no-files-found: error
+
+  linux:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash build/build_linux_docker.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lib-linux
+          path: GodotProject/bin/libgodot_gba.so
+          if-no-files-found: error
+
+  web:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash build/build_web_docker.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lib-web
+          path: |
+            GodotProject/bin/godot_gba.wasm
+            GodotProject/bin/godot_gba.threads.wasm
+          if-no-files-found: error
+
+  smoke:
+    needs: linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: lib-linux
+          path: GodotProject/bin
+      - name: Download Godot
+        run: |
+          curl -sSfL -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip
+          mv "Godot_v${GODOT_VERSION}-stable_linux.x86_64" godot
+          chmod +x godot
+      - name: Import project
+        run: ./godot --headless --path GodotProject --import || true
+      - name: Run every game for a while and look for panics
+        run: |
+          shopt -s nullglob nocaseglob
+          games=(GodotProject/games/*.gba GodotProject/games/*.zip)
+          if [ ${#games[@]} -eq 0 ]; then
+            echo "No games in GodotProject/games/, nothing to test."
+            exit 0
+          fi
+          failed=0
+          for game in "${games[@]}"; do
+            name=$(basename "$game")
+            echo "::group::$name"
+            # MainGBA.gd reads the game from "-- --game=<path>".
+            timeout 300 ./godot --headless --path GodotProject --quit-after 3000 \
+              --log-file "$RUNNER_TEMP/$name.log" res://Scenes/Emulator/MainGBA.tscn \
+              -- --game="res://games/$name" > /dev/null 2>&1 || true
+            cat "$RUNNER_TEMP/$name.log"
+            echo "::endgroup::"
+            if ! grep -q "\[GBA\] Initializing emulator" "$RUNNER_TEMP/$name.log"; then
+              echo "::error::$name: the emulator scene did not start"
+              failed=1
+            elif grep -qiE "panic|SCRIPT ERROR|Failed to load" "$RUNNER_TEMP/$name.log"; then
+              echo "::error::$name: error while running (see log above)"
+              failed=1
+            else
+              echo "OK: $name"
+            fi
+          done
+          exit $failed
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows, linux, web, smoke]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: lib-*
+          path: GodotProject/bin
+          merge-multiple: true
+      - name: Zip GodotProject
+        run: |
+          rm -f GodotProject/bin/~*
+          zip -qr "GodotProject-${GITHUB_REF_NAME}.zip" GodotProject
+          unzip -l "GodotProject-${GITHUB_REF_NAME}.zip" | tail -1
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" "GodotProject-${GITHUB_REF_NAME}.zip" \
+            --title "$GITHUB_REF_NAME" --generate-notes \
+            || gh release upload "$GITHUB_REF_NAME" "GodotProject-${GITHUB_REF_NAME}.zip" --clobber

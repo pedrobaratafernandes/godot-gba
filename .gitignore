@@ -1,0 +1,28 @@
+# Rust / Cargo
+target/
+
+# User-specific
+.vscode/
+.idea/
+*.swp
+*.bak
+
+# Games (commercial ROMs must not go into git)
+/GodotProject/games/*
+!GodotProject/games/README.md
+!GodotProject/games/los-burros.gba
+
+# User's official BIOS (not redistributable)
+/GodotProject/roms/gba_bios.bin
+
+# Godot exports
+build/web/
+build/windows/
+build/linux/
+
+# Copy of the DLL made by the Godot editor (hot reload)
+GodotProject/bin/~*.dll
+
+# Godot exports in GodotProject (ignore files, keep folders via .gitkeep)
+/GodotProject/build/*/*
+!/GodotProject/build/*/.gitkeep

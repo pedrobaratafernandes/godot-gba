@@ -1,0 +1,116 @@
+[gd_scene format=3 uid="uid://dn4w08xcdfday"]
+
+[ext_resource type="Script" path="res://Scripts/Dpad/Dpad.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/dpad/wiiu_dpad_up.png" id="2_up"]
+[ext_resource type="Texture2D" path="res://assets/dpad/wiiu_dpad_down.png" id="3_down"]
+[ext_resource type="Texture2D" path="res://assets/dpad/wiiu_dpad_left.png" id="4_left"]
+[ext_resource type="Texture2D" path="res://assets/dpad/wiiu_dpad_right.png" id="5_right"]
+
+[sub_resource type="Shader" id="Shader_dpad"]
+code = "shader_type canvas_item;
+
+// true: show only the red part (pressed direction)
+// false: show the whole cross with the red part painted white (neutral cross)
+uniform bool only_highlight = false;
+
+// In fragment(), COLOR already contains the texture color, so keep the
+// vertex color (modulate) separately and use it instead.
+varying vec4 vertex_color;
+
+void vertex() {
+	vertex_color = COLOR;
+}
+
+void fragment() {
+	vec4 c = texture(TEXTURE, UV);
+	bool red = c.r > 0.6 && c.g < 0.45 && c.b < 0.6;
+	if (only_highlight) {
+		if (!red) discard;
+	} else if (red) {
+		c.rgb = vec3(0.9);
+	}
+	COLOR = c * vertex_color;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="Material_base"]
+shader = SubResource("Shader_dpad")
+shader_parameter/only_highlight = false
+
+[sub_resource type="ShaderMaterial" id="Material_highlight"]
+shader = SubResource("Shader_dpad")
+shader_parameter/only_highlight = true
+
+[sub_resource type="RectangleShape2D" id="Shape_vertical"]
+size = Vector2(60, 24)
+
+[sub_resource type="RectangleShape2D" id="Shape_horizontal"]
+size = Vector2(24, 60)
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_script")
+
+[node name="Dpad" type="Node2D" parent="."]
+modulate = Color(1, 1, 1, 0.8)
+scale = Vector2(4, 4)
+
+[node name="Base" type="Sprite2D" parent="Dpad"]
+material = SubResource("Material_base")
+texture = ExtResource("2_up")
+
+[node name="HighlightUp" type="Sprite2D" parent="Dpad"]
+visible = false
+material = SubResource("Material_highlight")
+texture = ExtResource("2_up")
+
+[node name="HighlightDown" type="Sprite2D" parent="Dpad"]
+visible = false
+material = SubResource("Material_highlight")
+texture = ExtResource("3_down")
+
+[node name="HighlightLeft" type="Sprite2D" parent="Dpad"]
+visible = false
+material = SubResource("Material_highlight")
+texture = ExtResource("4_left")
+
+[node name="HighlightRight" type="Sprite2D" parent="Dpad"]
+visible = false
+material = SubResource("Material_highlight")
+texture = ExtResource("5_right")
+
+[node name="Up" type="TouchScreenButton" parent="Dpad"]
+position = Vector2(0, -18)
+shape = SubResource("Shape_vertical")
+shape_centered = false
+passby_press = true
+action = "gba_up"
+
+[node name="Down" type="TouchScreenButton" parent="Dpad"]
+position = Vector2(0, 18)
+shape = SubResource("Shape_vertical")
+shape_centered = false
+passby_press = true
+action = "gba_down"
+
+[node name="Left" type="TouchScreenButton" parent="Dpad"]
+position = Vector2(-18, 0)
+shape = SubResource("Shape_horizontal")
+shape_centered = false
+passby_press = true
+action = "gba_left"
+
+[node name="Right" type="TouchScreenButton" parent="Dpad"]
+position = Vector2(18, 0)
+shape = SubResource("Shape_horizontal")
+shape_centered = false
+passby_press = true
+action = "gba_right"
