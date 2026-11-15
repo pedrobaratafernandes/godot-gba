@@ -1,5 +1,13 @@
 # Godot GBA (Rust GDExtension)
 
+[![CI](https://github.com/pedrobaratafernandes/godot-gba/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/pedrobaratafernandes/godot-gba/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/pedrobaratafernandes/godot-gba?sort=semver)](https://github.com/pedrobaratafernandes/godot-gba/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/pedrobaratafernandes/godot-gba/total)](https://github.com/pedrobaratafernandes/godot-gba/releases)
+[![Godot](https://img.shields.io/badge/Godot-4.7.2-478cbf?logo=godotengine&logoColor=white)](https://godotengine.org)
+[![Rust](https://img.shields.io/badge/Rust-1.97.1-dea584?logo=rust&logoColor=white)](rust-toolchain.toml)
+[![Platforms](https://img.shields.io/badge/platforms-Web%20%7C%20Windows%20%7C%20Linux-informational)](#building)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 A Game Boy Advance emulator for Godot 4.7.2, built with Rust and GDExtension on top of the [rustboyadvance-ng](https://github.com/michelhe/rustboyadvance-ng) core. Builds for **Web, Windows and Linux**.
 
 ## Layout
