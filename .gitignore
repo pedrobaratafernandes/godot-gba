@@ -26,3 +26,6 @@ GodotProject/bin/~*.dll
 # Godot exports in GodotProject (ignore files, keep folders via .gitkeep)
 /GodotProject/build/*/*
 !/GodotProject/build/*/.gitkeep
+
+# Local HTTPS certificate for testing the Web build on a phone (private key: never commit)
+devcert/

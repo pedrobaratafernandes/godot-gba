@@ -61,7 +61,8 @@ script = ExtResource("1_script")
 
 [node name="Dpad" type="Node2D" parent="."]
 modulate = Color(1, 1, 1, 0.8)
-scale = Vector2(4, 4)
+position = Vector2(23, 0)
+scale = Vector2(5, 5)
 
 [node name="Base" type="Sprite2D" parent="Dpad"]
 material = SubResource("Material_base")

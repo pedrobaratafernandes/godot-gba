@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://d6f8ujo14f5b" path="res://icon.svg" id="2_icon"]
 [ext_resource type="PackedScene" uid="uid://menuoverlay" path="res://Scenes/GameMenu/GameMenu.tscn" id="3_menu"]
 [ext_resource type="PackedScene" uid="uid://dn4w08xcdfday" path="res://Scenes/Dpad/dpad.tscn" id="4_dpad"]
-[ext_resource type="PackedScene" path="res://Scenes/Dpad/gba_buttons.tscn" id="5_buttons"]
+[ext_resource type="PackedScene" uid="uid://d4drhbftgyjin" path="res://Scenes/Dpad/gba_buttons.tscn" id="5_buttons"]
 [ext_resource type="PackedScene" uid="uid://rcbagsjsl6db" path="res://Scenes/Dpad/menu_button.tscn" id="6_menu_btn"]
 
 [sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_sound"]

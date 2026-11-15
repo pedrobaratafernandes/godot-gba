@@ -1,17 +1,17 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://d4drhbftgyjin"]
 
-[ext_resource type="Texture2D" path="res://assets/buttons/xbox_button_a.png" id="a"]
-[ext_resource type="Texture2D" path="res://assets/buttons/xbox_button_a_outline.png" id="a_p"]
-[ext_resource type="Texture2D" path="res://assets/buttons/xbox_button_b.png" id="b"]
-[ext_resource type="Texture2D" path="res://assets/buttons/xbox_button_b_outline.png" id="b_p"]
-[ext_resource type="Texture2D" path="res://assets/trigger/wiiu_button_l.png" id="l"]
-[ext_resource type="Texture2D" path="res://assets/trigger/wiiu_button_l_outline.png" id="l_p"]
-[ext_resource type="Texture2D" path="res://assets/trigger/wiiu_button_r.png" id="r"]
-[ext_resource type="Texture2D" path="res://assets/trigger/wiiu_button_r_outline.png" id="r_p"]
-[ext_resource type="Texture2D" path="res://assets/start/gamecube_button_start.png" id="start"]
-[ext_resource type="Texture2D" path="res://assets/start/gamecube_button_start_outline.png" id="start_p"]
+[ext_resource type="Texture2D" uid="uid://c1vqkrq5qtc00" path="res://assets/buttons/xbox_button_a.png" id="a"]
+[ext_resource type="Texture2D" uid="uid://op5osk1hj8kh" path="res://assets/buttons/xbox_button_a_outline.png" id="a_p"]
+[ext_resource type="Texture2D" uid="uid://3len0m1oy5v8" path="res://assets/buttons/xbox_button_b.png" id="b"]
+[ext_resource type="Texture2D" uid="uid://lydhi8siy0vk" path="res://assets/buttons/xbox_button_b_outline.png" id="b_p"]
+[ext_resource type="Texture2D" uid="uid://ds7a8c3qe801n" path="res://assets/trigger/wiiu_button_l.png" id="l"]
+[ext_resource type="Texture2D" uid="uid://dr1juuit5hj1t" path="res://assets/trigger/wiiu_button_l_outline.png" id="l_p"]
+[ext_resource type="Texture2D" uid="uid://4cj6vpos7ex2" path="res://assets/trigger/wiiu_button_r.png" id="r"]
+[ext_resource type="Texture2D" uid="uid://0fyuwncfmkt3" path="res://assets/trigger/wiiu_button_r_outline.png" id="r_p"]
+[ext_resource type="Texture2D" uid="uid://b8tltofbpf8h8" path="res://assets/start/gamecube_button_start.png" id="start"]
+[ext_resource type="Texture2D" uid="uid://nctrfxyv7u38" path="res://assets/start/gamecube_button_start_outline.png" id="start_p"]
 
-[node name="GBAButtons" type="Control"]
+[node name="GBAButtons" type="Control" unique_id=551403532]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,118 +20,116 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Face" type="Control" parent="."]
+[node name="Face" type="Control" parent="." unique_id=1399070160]
 layout_mode = 1
+anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
 mouse_filter = 2
 
-[node name="A" type="TouchScreenButton" parent="Face"]
+[node name="A" type="TouchScreenButton" parent="Face" unique_id=2025084524]
 modulate = Color(1, 1, 1, 0.8)
-position = Vector2(-180, -340)
-scale = Vector2(2.2, 2.2)
+position = Vector2(-198, -358)
+scale = Vector2(2.75, 2.75)
 texture_normal = ExtResource("a")
 texture_pressed = ExtResource("a_p")
 passby_press = true
 action = "gba_a"
 visibility_mode = 1
 
-[node name="B" type="TouchScreenButton" parent="Face"]
+[node name="B" type="TouchScreenButton" parent="Face" unique_id=1386411917]
 modulate = Color(1, 1, 1, 0.8)
-position = Vector2(-330, -240)
-scale = Vector2(2.2, 2.2)
+position = Vector2(-348, -258)
+scale = Vector2(2.75, 2.75)
 texture_normal = ExtResource("b")
 texture_pressed = ExtResource("b_p")
 passby_press = true
 action = "gba_b"
 visibility_mode = 1
 
-[node name="ShoulderL" type="Control" parent="."]
+[node name="ShoulderL" type="Control" parent="." unique_id=932911339]
 layout_mode = 1
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+anchors_preset = 0
 mouse_filter = 2
 
-[node name="L" type="TouchScreenButton" parent="ShoulderL"]
+[node name="L" type="TouchScreenButton" parent="ShoulderL" unique_id=2037636198]
 modulate = Color(1, 1, 1, 0.8)
-position = Vector2(230, 10)
-scale = Vector2(2.2, 2.2)
+position = Vector2(10, 10)
+scale = Vector2(2.75, 2.75)
 texture_normal = ExtResource("l")
 texture_pressed = ExtResource("l_p")
 passby_press = true
 action = "gba_l"
 visibility_mode = 1
 
-[node name="ShoulderR" type="Control" parent="."]
+[node name="ShoulderR" type="Control" parent="." unique_id=17998236]
 layout_mode = 1
+anchors_preset = 1
 anchor_left = 1.0
-anchor_top = 0.0
 anchor_right = 1.0
-anchor_bottom = 0.0
+grow_horizontal = 0
 mouse_filter = 2
 
-[node name="R" type="TouchScreenButton" parent="ShoulderR"]
+[node name="R" type="TouchScreenButton" parent="ShoulderR" unique_id=613433665]
 modulate = Color(1, 1, 1, 0.8)
-position = Vector2(-160, 10)
-scale = Vector2(2.2, 2.2)
+position = Vector2(-186, 10)
+scale = Vector2(2.75, 2.75)
 texture_normal = ExtResource("r")
 texture_pressed = ExtResource("r_p")
 passby_press = true
 action = "gba_r"
 visibility_mode = 1
 
-[node name="StartSelect" type="Control" parent="."]
+[node name="StartSelect" type="Control" parent="." unique_id=1097554905]
 layout_mode = 1
-anchor_left = 0.5
+anchors_preset = 2
 anchor_top = 1.0
-anchor_right = 0.5
 anchor_bottom = 1.0
+grow_vertical = 0
 mouse_filter = 2
 
-[node name="SELECT" type="TouchScreenButton" parent="StartSelect"]
+[node name="SELECT" type="TouchScreenButton" parent="StartSelect" unique_id=256863491]
 modulate = Color(1, 1, 1, 0.8)
-position = Vector2(-115, -115)
-scale = Vector2(1.6, 1.6)
+position = Vector2(14, -141)
+scale = Vector2(2, 2)
 texture_normal = ExtResource("start")
 texture_pressed = ExtResource("start_p")
 passby_press = true
 action = "gba_select"
 visibility_mode = 1
 
-[node name="Label" type="Label" parent="StartSelect/SELECT"]
+[node name="Label" type="Label" parent="StartSelect/SELECT" unique_id=1425410170]
 offset_top = 50.0
 offset_right = 64.0
 offset_bottom = 64.0
-mouse_filter = 2
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 16
 text = "SELECT"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="START" type="TouchScreenButton" parent="StartSelect"]
+[node name="START" type="TouchScreenButton" parent="StartSelect" unique_id=1256024745]
 modulate = Color(1, 1, 1, 0.8)
-position = Vector2(13, -115)
-scale = Vector2(1.6, 1.6)
+position = Vector2(150, -190)
+scale = Vector2(2, 2)
 texture_normal = ExtResource("start")
 texture_pressed = ExtResource("start_p")
 passby_press = true
 action = "gba_start"
 visibility_mode = 1
 
-[node name="Label" type="Label" parent="StartSelect/START"]
+[node name="Label" type="Label" parent="StartSelect/START" unique_id=1807265378]
 offset_top = 50.0
 offset_right = 64.0
 offset_bottom = 64.0
-mouse_filter = 2
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 16
 text = "START"
 horizontal_alignment = 1
 vertical_alignment = 1

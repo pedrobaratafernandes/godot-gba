@@ -957,7 +957,6 @@ dependencies = [
 [[package]]
 name = "rustboyadvance-core"
 version = "0.1.0"
-source = "git+https://github.com/michelhe/rustboyadvance-ng?rev=1d7ff23a6adb42d803ebd393c3d27d94e4fea15e#1d7ff23a6adb42d803ebd393c3d27d94e4fea15e"
 dependencies = [
  "ansi_term",
  "arm7tdmi",

@@ -52,3 +52,7 @@ rustboyadvance-utils = { path = "patches/rustboyadvance-utils" }
 # the right PC. Without it, panic = "abort" builds (the Web build) crash games such as
 # los-burros.gba: "executing undefind thumb instruction e8bd at @fffffb42".
 arm7tdmi = { path = "patches/arm7tdmi" }
+# Local copy of the emulator core (same commit) with two speed-ups for slow phones:
+#  - src/cartridge/mod.rs: fast path for plain ROM reads (read_16 / read_32)
+#  - src/gpu/mod.rs + src/gba.rs: `set_skip_render` (frame skip: emulate without drawing)
+rustboyadvance-core = { path = "patches/rustboyadvance-core" }

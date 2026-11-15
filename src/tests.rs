@@ -110,6 +110,103 @@ fn produces_audio_at_44100() {
 }
 
 #[test]
+fn filtered_audio_frames_are_stereo_and_clamped() {
+    let mut m = GbaMachine::new(OPEN_SOURCE_BIOS, &red_screen_rom(), true).unwrap();
+    let mut frames = Vec::new();
+    for _ in 0..60 {
+        m.run_frame();
+        m.drain_audio_frames(|l, r| frames.push((l, r)));
+    }
+    // 1 second = ~44100 stereo frames (2% tolerance).
+    let expected = SAMPLE_RATE as f64 * 60.0 / GBA_FPS;
+    let got = frames.len() as f64;
+    assert!((got - expected).abs() / expected < 0.02, "frames: {got}, expected ~{expected}");
+    assert!(frames.iter().all(|&(l, r)| (-1.0..=1.0).contains(&l) && (-1.0..=1.0).contains(&r)));
+}
+
+#[test]
+fn frame_skip_does_not_change_the_game() {
+    // Skipping the drawing must not change the emulated machine: after the same
+    // number of frames, a run with frame skip shows exactly the same picture and
+    // produced exactly the same sound as a run without it.
+    let Ok(rom) = std::fs::read("GodotProject/games/los-burros.gba") else { return };
+    let mut a = GbaMachine::new(OPEN_SOURCE_BIOS, &rom, true).unwrap();
+    let mut b = GbaMachine::new(OPEN_SOURCE_BIOS, &rom, true).unwrap();
+    let (mut audio_a, mut audio_b) = (Vec::new(), Vec::new());
+    for i in 0..600 {
+        a.run_frame();
+        if i % 3 == 2 { b.run_frame() } else { b.run_frame_no_video() }
+        a.drain_audio_frames(|l, r| audio_a.push((l, r)));
+        b.drain_audio_frames(|l, r| audio_b.push((l, r)));
+    }
+    let (mut rgb_a, mut rgb_b) = (Vec::new(), Vec::new());
+    a.frame_rgb(&mut rgb_a);
+    b.frame_rgb(&mut rgb_b);
+    assert!(rgb_a == rgb_b, "picture differs with frame skip");
+    assert!(audio_a == audio_b, "sound differs with frame skip");
+}
+
+#[test]
+fn emulation_thread_runs_in_real_time() {
+    let machine = GbaMachine::new(OPEN_SOURCE_BIOS, &red_screen_rom(), true).unwrap();
+    let Ok(thread) = EmuThread::spawn(machine) else { panic!("threads not available") };
+    std::thread::sleep(std::time::Duration::from_millis(1000));
+    thread.set_paused(true);
+    std::thread::sleep(std::time::Duration::from_millis(50));
+
+    // ~1 second of real time = ~60 GBA frames and ~44100 stereo sound frames.
+    let frames = thread.frame_count();
+    assert!((50..=66).contains(&frames), "frames in 1 s: {frames}");
+    let mut audio = 0;
+    thread.take_audio(|_, _| audio += 1);
+    assert!((18000..=22050).contains(&audio), "queued sound is capped at ~0.5 s: {audio}");
+
+    // The picture reaches the Godot side, and only once per new frame.
+    let (mut rgb, mut serial) = (Vec::new(), 0);
+    assert!(thread.take_video(&mut rgb, &mut serial));
+    assert_eq!(rgb.len(), 240 * 160 * 3);
+    let center = (80 * 240 + 120) * 3;
+    assert!(rgb[center] > 200 && rgb[center + 1] < 50 && rgb[center + 2] < 50, "not red");
+    assert!(!thread.take_video(&mut rgb, &mut serial));
+
+    // Buttons, direct access (save states) and pause.
+    thread.set_key(Keys::ButtonA, true);
+    thread.set_paused(false);
+    std::thread::sleep(std::time::Duration::from_millis(100));
+    assert_eq!(thread.with_machine(|m| *m.gba.get_key_state()) & 1, 0, "A not pressed");
+    let state = thread.with_machine(|m| m.gba.save_state().unwrap());
+    assert!(thread.with_machine(|m| m.gba.restore_state(&state).is_ok()));
+    assert!(thread.take_emulation_ms() > 0.0);
+}
+
+#[test]
+fn audio_stretcher_follows_the_emulation_speed() {
+    let count = |st: &mut AudioStretcher, n: usize| {
+        let mut out = 0;
+        for i in 0..n {
+            st.push(i as f32 / n as f32, 0.0, &mut |l, _| {
+                assert!((0.0..=1.0).contains(&l));
+                out += 1;
+            });
+        }
+        out
+    };
+    // Full speed (44100 frames per second): nothing changes.
+    let mut st = AudioStretcher::new();
+    for _ in 0..5 { st.measure(0.5, 22050); }
+    assert_eq!(st.ratio(), 1.0);
+    assert_eq!(count(&mut st, 1000), 1000);
+    // 70% speed: after a few seconds the sound is stretched to ~1/0.7.
+    for _ in 0..16 { st.measure(0.5, 15435); }
+    assert!((st.ratio() - 0.7).abs() < 0.01, "ratio: {}", st.ratio());
+    let out = count(&mut st, 7000);
+    assert!((9900..=10100).contains(&out), "stretched frames: {out}");
+    // Back to full speed: normal pitch again.
+    for _ in 0..4 { st.measure(0.5, 22050); }
+    assert_eq!(st.ratio(), 1.0);
+}
+
+#[test]
 fn keys_map_to_keyinput_bits() {
     let mut m = GbaMachine::new(OPEN_SOURCE_BIOS, &red_screen_rom(), true).unwrap();
     m.set_key(Keys::ButtonA, true);
@@ -165,4 +262,22 @@ fn all_games_in_folder_boot() {
         assert!(has_image, "{}: blank screen after 10 s", path.display());
         println!("OK: {} ({})", path.display(), m.gba.get_game_title());
     }
+}
+
+#[test]
+#[ignore]
+fn bench_emulation_speed() {
+    let rom = std::fs::read("GodotProject/games/los-burros.gba").unwrap();
+    let mut m = GbaMachine::new(OPEN_SOURCE_BIOS, &rom, true).unwrap();
+    for _ in 0..120 { m.run_frame(); m.drain_audio_frames(|_, _| {}); }
+    let t = std::time::Instant::now();
+    let n: u32 = std::env::var("BENCH_FRAMES").ok().and_then(|v| v.parse().ok()).unwrap_or(1200);
+    let mut rgb = Vec::new();
+    let skip: u32 = std::env::var("BENCH_SKIP").ok().and_then(|v| v.parse().ok()).unwrap_or(0);
+    for i in 0..n {
+        if i % (skip + 1) == skip { m.run_frame(); m.frame_rgb(&mut rgb); } else { m.run_frame_no_video(); }
+        m.drain_audio_frames(|_, _| {});
+    }
+    let s = t.elapsed().as_secs_f64();
+    println!("BENCH: {:.0} fps native ({:.2} ms/frame, {:.1}x real time)", n as f64 / s, s * 1000.0 / n as f64, n as f64 / s / GBA_FPS);
 }
